@@ -1,6 +1,7 @@
 import { client } from "@/sanity/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PortableText } from '@portabletext/react'; // 👈 Import komponen perender Rich-Text
 
 // Fungsi untuk mengambil data satu berita berdasarkan slug
 async function getNewsDetail(slug: string) {
@@ -22,7 +23,6 @@ export default async function NewsDetail({
 }: { 
   params: Promise<{ slug: string }> 
 }) {
-  // 1. Await params dengan aman untuk Next.js versi terbaru
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
 
@@ -80,17 +80,27 @@ export default async function NewsDetail({
           </div>
         </div>
 
-        {/* Gambar Utama (Jika ada) */}
+        {/* Gambar Utama */}
         {news.image && (
           <div style={{ width: '100%', height: '400px', borderRadius: '24px', overflow: 'hidden', position: 'relative' }}>
             <img src={news.image} alt={news.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         )}
 
-        {/* Konten Berita */}
+        {/* Konten Berita (Menggunakan PortableText) */}
         <div style={{ fontFamily: 'var(--font-body)', fontSize: '16px', lineHeight: 1.8, color: 'var(--color-dark-slate)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <p style={{ fontWeight: 600, fontStyle: 'italic', color: 'var(--color-text-muted)' }}>{news.excerpt}</p>
-          <p>{news.content}</p>
+          {news.excerpt && (
+            <p style={{ fontWeight: 600, fontStyle: 'italic', color: 'var(--color-text-muted)' }}>
+              {news.excerpt}
+            </p>
+          )}
+
+          {/* ⚠️ Render konten rich text dari Sanity */}
+          {news.content ? (
+            <PortableText value={news.content} />
+          ) : (
+            <p>Belum ada isi konten.</p>
+          )}
         </div>
 
       </article>
