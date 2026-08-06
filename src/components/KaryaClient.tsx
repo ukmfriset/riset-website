@@ -3,20 +3,11 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import KaryaCard, { KaryaItem } from "@/components/ui/KaryaCard";
-
-const MONTH_MAP: Record<string, number> = {
-  Januari: 0, Februari: 1, Maret: 2, April: 3, Mei: 4, Juni: 5,
-  Juli: 6, Agustus: 7, September: 8, Oktober: 9, November: 10, Desember: 11,
-};
+// ✅ Import helper format tanggal Indonesia
+import { formatIndonesianDate } from "@/lib/date-formatter";
 
 const ITEMS_PER_PAGE = 6;
 const PAGINATION_DELTA = 2;
-
-const parseDate = (date: string): number => {
-  if (!date) return 0;
-  const [day, month, year] = date.split(" ");
-  return new Date(Number(year), MONTH_MAP[month] || 0, Number(day)).getTime();
-};
 
 const getVisiblePages = (current: number, total: number): (number | string)[] => {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
@@ -78,7 +69,7 @@ export default function KaryaClient({ initialKarya }: { initialKarya: KaryaItem[
         
         return { ...item, excerpt: finalExcerpt };
       })
-      .sort((a, b) => parseDate(b.date) - parseDate(a.date));
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [activeCategory, searchQuery, initialKarya]);
 
   const totalPages = Math.max(1, Math.ceil(filteredKarya.length / ITEMS_PER_PAGE));
@@ -252,15 +243,23 @@ export default function KaryaClient({ initialKarya }: { initialKarya: KaryaItem[
                 gap: 32,
               }}
             >
-              {currentKarya.map((karya, index) => (
-                <KaryaCard
-                  key={karya.slug}
-                  item={karya}
-                  index={index}
-                  delay={`${index * 0.05}s`}
-                  isVisible={true}
-                />
-              ))}
+              {currentKarya.map((karya, index) => {
+                // Format tanggal karya menggunakan formatIndonesianDate
+                const formattedKarya = {
+                  ...karya,
+                  date: formatIndonesianDate(karya.date)
+                };
+
+                return (
+                  <KaryaCard
+                    key={karya.slug || index}
+                    item={formattedKarya}
+                    index={index}
+                    delay={`${index * 0.05}s`}
+                    isVisible={true}
+                  />
+                );
+              })}
             </div>
 
             {/* PAGINATION */}
