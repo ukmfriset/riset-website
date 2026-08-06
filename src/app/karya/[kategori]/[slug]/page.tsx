@@ -35,9 +35,10 @@ async function getSingleKarya(kategori: string, slug: string) {
   };
 }
 
-// Konfigurasi Metadata untuk SEO
-export async function generateMetadata({ params }: { params: { kategori: string, slug: string } }) {
-  const karya = await getSingleKarya(params.kategori, params.slug);
+// ⚠️ Perbaikan: Mengubah params menjadi Promise untuk Metadata
+export async function generateMetadata({ params }: { params: Promise<{ kategori: string, slug: string }> }) {
+  const resolvedParams = await params;
+  const karya = await getSingleKarya(resolvedParams.kategori, resolvedParams.slug);
   if (!karya) return { title: 'Karya Tidak Ditemukan' };
   
   return {
@@ -46,9 +47,11 @@ export async function generateMetadata({ params }: { params: { kategori: string,
   };
 }
 
-export default async function DetailKaryaPage({ params }: { params: { kategori: string, slug: string } }) {
-  // Ambil parameter dari URL
-  const { kategori, slug } = params;
+// ⚠️ Perbaikan utama: Mengubah params menjadi Promise dan di-await
+export default async function DetailKaryaPage({ params }: { params: Promise<{ kategori: string, slug: string }> }) {
+  // Ambil dan await parameter dari URL dengan aman
+  const resolvedParams = await params;
+  const { kategori, slug } = resolvedParams;
   
   // Tarik data karya spesifik
   const dataKarya = await getSingleKarya(kategori, slug);

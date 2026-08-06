@@ -17,8 +17,19 @@ async function getNewsDetail(slug: string) {
   return await client.fetch(query, { slug }, { next: { revalidate: 60 } });
 }
 
-export default async function NewsDetail({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function NewsDetail({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}) {
+  // 1. Await params dengan aman untuk Next.js versi terbaru
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+
+  if (!slug) {
+    notFound();
+  }
+
   const news = await getNewsDetail(slug);
 
   if (!news) {
@@ -79,7 +90,7 @@ export default async function NewsDetail({ params }: { params: { slug: string } 
         {/* Konten Berita */}
         <div style={{ fontFamily: 'var(--font-body)', fontSize: '16px', lineHeight: 1.8, color: 'var(--color-dark-slate)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <p style={{ fontWeight: 600, fontStyle: 'italic', color: 'var(--color-text-muted)' }}>{news.excerpt}</p>
-          <div>{/* Render teks konten atau deskripsi berita */}</div>
+          <p>{news.content}</p>
         </div>
 
       </article>
