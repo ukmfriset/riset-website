@@ -8,6 +8,8 @@ import AchievementSection from '../components/sections/AchievementSection';
 import TeamSection from '../components/sections/TeamSection';
 import CtaSection from '../components/sections/CtaSection';
 import ColorStorySection from '../components/sections/ColorStorySection';
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 // 1. Import Sanity client
 import { client } from '@/sanity/client'; 
@@ -65,6 +67,8 @@ export default async function Home() {
 
   return (
     <>
+      <SpeedInsights />
+      <Analytics />
       <main>
         <Hero />
         <QuoteSection />
