@@ -4,8 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { getAccentColorByString } from "@/lib/accent-cycle"; 
-// ✅ Import ikon profesional dari react-icons
 import { FaWhatsapp, FaXTwitter, FaFacebookF, FaLinkedinIn, FaRegCopy, FaCheck } from "react-icons/fa6";
+// ✅ Import fungsi formatter tanggal
+import { formatIndonesianDate } from "@/lib/date-formatter";
 
 // Tipe data dari Sanity
 export interface KaryaData {
@@ -25,7 +26,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [mounted, setMounted] = useState(false); // 👈 Penangkal hydration error
+  const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -229,7 +230,8 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
               </div>
             </div>
             <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
-            <span>{karya.date}</span>
+            {/* ✅ Tanggal diformat menggunakan formatIndonesianDate */}
+            <span>{formatIndonesianDate(karya.date)}</span>
             <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
             <span>⏱ {readTime} menit</span>
             {wordCount > 0 && (
@@ -444,7 +446,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
 
             <hr style={{ border: "0", borderTop: "1px solid #E2E8F0", margin: "20px 0" }} />
 
-            {/* Share Actions - ✅ Diperbarui menggunakan react-icons */}
+            {/* Share Actions */}
             <h4
               style={{
                 fontSize: "13px",

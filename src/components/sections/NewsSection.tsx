@@ -4,13 +4,15 @@ import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 // ✅ Import helper warna otomatis
 import { getAccentColor, getAccentColorByString } from "@/lib/accent-cycle";
+// ✅ Import fungsi formatter tanggal dari lib yang baru dibuat
+import { formatIndonesianDate } from "@/lib/date-formatter";
 
 // ✅ Definisikan tipe data agar sesuai dengan Sanity
 export interface NewsItem {
   id?: string;
   slug?: string;
   title: string;
-  date: string;
+  date: string; // Format dari Sanity sekarang berupa string tanggal standar (YYYY-MM-DD)
   author: string;
   role: string;
   category: string;
@@ -19,30 +21,14 @@ export interface NewsItem {
   link: string;
 }
 
-const MONTH_MAP: Record<string, number> = {
-  januari: 0, februari: 1, maret: 2, april: 3, mei: 4, juni: 5,
-  juli: 6, agustus: 7, september: 8, oktober: 9, november: 10, desember: 11,
-};
-
-function parseIndonesianDate(dateStr: string): number {
-  if (!dateStr) return 0;
-  const parts = dateStr.trim().toLowerCase().split(/\s+/);
-  if (parts.length !== 3) return 0;
-  const [day, monthName, year] = parts;
-  const month = MONTH_MAP[monthName];
-  if (month === undefined) return 0;
-  return new Date(parseInt(year, 10), month, parseInt(day, 10)).getTime();
-}
-
-// ✅ Tambahkan props newsList
 export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Mengurutkan dan mengambil 4 berita terbaru
+  // Mengurutkan berdasarkan waktu secara akurat (terbaru di atas) dan mengambil 4 berita
   const displayedNews = [...newsList]
-    .sort((a, b) => parseIndonesianDate(b.date) - parseIndonesianDate(a.date))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 4);
 
   useEffect(() => {
@@ -168,8 +154,8 @@ export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
         {/* Grid Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
           {displayedNews.map((news, index) => {
-            const accent = getAccentColor(index, 0); // Warna background kotak dinamis
-            const categoryAccent = getAccentColorByString(news.category); // ✅ Warna khusus tag kategori
+            const accent = getAccentColor(index, 0); 
+            const categoryAccent = getAccentColorByString(news.category); 
             const isHovered = hoverIndex === index;
             const cardDelay = `${0.4 + index * 0.1}s`;
             const animatedStyle = getAnimatedStyle(cardDelay);
@@ -244,12 +230,11 @@ export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
                     alignItems: 'center',
                     zIndex: 1,
                   }}>
-                    {/* ✅ MENGGUNAKAN categoryAccent UNTUK WARNA YANG KONSISTEN */}
                     <span style={{ fontFamily: 'var(--font-heading)', fontSize: '10px', fontWeight: 800, color: categoryAccent.text, backgroundColor: '#ffffff', padding: '4px 12px', borderRadius: '50px' }}>
                       {news.category}
                     </span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, color: 'var(--color-text-muted)', backgroundColor: '#ffffff', padding: '4px 10px', borderRadius: '50px' }}>
-                      {news.date}
+                      {formatIndonesianDate(news.date)}
                     </span>
                   </div>
                 </div>

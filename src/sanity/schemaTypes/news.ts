@@ -22,15 +22,18 @@ export default {
     },
     {
       name: 'date',
-      type: 'string',
-      title: 'Tanggal (Misal: 10 Januari 2023)',
-      // Menggunakan string agar formatnya persis dengan data statis lamamu
+      type: 'date', // 👈 Diubah ke tipe date agar menggunakan widget kalender
+      title: 'Tanggal Berita',
+      options: {
+        dateFormat: 'YYYY-MM-DD',
+      },
+      validation: (Rule: any) => Rule.required()
     },
     {
       name: 'author',
       type: 'string',
       title: 'Penulis',
-      initialValue: 'Tim Infokom' // Nilai default berdasarkan datamu
+      initialValue: 'Tim Infokom'
     },
     {
       name: 'role',
@@ -60,7 +63,7 @@ export default {
       name: 'content',
       type: 'array',
       title: 'Isi Berita Lengkap',
-      of: [{ type: 'block' }] // Mengubah string biasa menjadi Rich-Text Editor (Portable Text)
+      of: [{ type: 'block' }]
     }
   ]
 }

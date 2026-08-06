@@ -5,6 +5,8 @@ import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { getAccentColorByString } from "@/lib/accent-cycle"; 
 import { FaWhatsapp, FaXTwitter, FaFacebookF, FaLinkedinIn, FaRegCopy, FaCheck } from "react-icons/fa6";
+// ✅ Import fungsi formatter tanggal dari lib yang sudah dibuat
+import { formatIndonesianDate } from "@/lib/date-formatter";
 
 export interface Article {
   id: string;
@@ -23,7 +25,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [mounted, setMounted] = useState(false); // 👈 Penangkal hydration error
+  const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -227,7 +229,8 @@ export default function NewsDetailClient({ article }: { article: Article | null 
               </div>
             </div>
             <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
-            <span>{article.date}</span>
+            {/* ✅ Tanggal diformat menggunakan formatIndonesianDate */}
+            <span>{formatIndonesianDate(article.date)}</span>
             <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
             <span>⏱ {readTime} menit</span>
             <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
