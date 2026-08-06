@@ -3,8 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
-// ✅ Import helper warna otomatis
 import { getAccentColorByString } from "@/lib/accent-cycle"; 
+import { FaWhatsapp, FaXTwitter, FaFacebookF, FaLinkedinIn, FaRegCopy, FaCheck } from "react-icons/fa6";
 
 export interface Article {
   id: string;
@@ -22,41 +22,35 @@ export interface Article {
 export default function NewsDetailClient({ article }: { article: Article | null }) {
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false); // 👈 Penangkal hydration error
+  const [copied, setCopied] = useState(false);
 
-  // Scroll progress + back to top visibility
   useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     const onScroll = () => {
       const scrollTop = window.scrollY;
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(total > 0 ? (scrollTop / total) * 100 : 0);
-      setShowBackToTop(scrollTop > 600);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
-  // Check mobile
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Fade in animation on mount
-  useEffect(() => {
     setIsVisible(true);
-  }, []);
 
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   const copyLink = useCallback(() => {
     navigator.clipboard.writeText(window.location.href);
-    alert("Link berhasil disalin!");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, []);
 
   const shareWhatsApp = useCallback(() => {
@@ -68,6 +62,17 @@ export default function NewsDetailClient({ article }: { article: Article | null 
     const text = encodeURIComponent(article?.title || "");
     const url = encodeURIComponent(window.location.href);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
+  }, [article]);
+
+  const shareFacebook = useCallback(() => {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+  }, []);
+
+  const shareLinkedIn = useCallback(() => {
+    const title = encodeURIComponent(article?.title || "");
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}`, "_blank");
   }, [article]);
 
   if (!article) {
@@ -85,13 +90,12 @@ export default function NewsDetailClient({ article }: { article: Article | null 
     );
   }
 
-  // Ekstrak teks untuk menghitung kata dan estimasi waktu baca
   const plainText = extractTextFromBlocks(article.content);
   const wordCount = plainText.split(/\s+/).filter(Boolean).length;
   const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
-  // ✅ Dapatkan warna aksen untuk kategori artikel ini
   const categoryAccent = getAccentColorByString(article.category);
+  const mobileView = mounted ? isMobile : false;
 
   return (
     <main style={{ backgroundColor: "#ffffff", color: "#1e293b", minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
@@ -103,7 +107,6 @@ export default function NewsDetailClient({ article }: { article: Article | null 
           left: 0,
           width: `${progress}%`,
           height: "3px",
-          // Menggunakan warna background dinamis dari kategori
           background: `linear-gradient(90deg, ${categoryAccent.text}, ${categoryAccent.border})`,
           zIndex: 100,
           transition: "width 0.15s ease-out",
@@ -111,41 +114,11 @@ export default function NewsDetailClient({ article }: { article: Article | null 
         }}
       />
 
-      {/* ─── Back to Top Button ─── */}
-      {showBackToTop && (
-        <button
-          onClick={scrollToTop}
-          aria-label="Kembali ke atas"
-          style={{
-            position: "fixed",
-            bottom: isMobile ? "16px" : "32px",
-            right: isMobile ? "16px" : "32px",
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            border: "none",
-            background: categoryAccent.text, // Mengikuti warna kategori
-            color: "#fff",
-            fontSize: "20px",
-            cursor: "pointer",
-            boxShadow: `0 8px 24px ${categoryAccent.bg}`,
-            zIndex: 99,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "all 0.3s ease",
-            animation: "fadeInUp 0.3s ease",
-          }}
-        >
-          ↑
-        </button>
-      )}
-
       {/* ─── Hero Section ─── */}
       <section
         style={{
           background: `linear-gradient(180deg, ${categoryAccent.bg} 0%, #ffffff 100%)`,
-          padding: isMobile ? "80px 16px 40px" : "120px 24px 60px",
+          padding: mobileView ? "80px 16px 40px" : "120px 24px 60px",
           position: "relative",
           overflow: "hidden",
         }}
@@ -155,8 +128,8 @@ export default function NewsDetailClient({ article }: { article: Article | null 
             position: "absolute",
             top: "-10%",
             right: "-5%",
-            width: isMobile ? "200px" : "400px",
-            height: isMobile ? "200px" : "400px",
+            width: mobileView ? "200px" : "400px",
+            height: mobileView ? "200px" : "400px",
             borderRadius: "50%",
             background: categoryAccent.bg,
             opacity: 0.6,
@@ -196,7 +169,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
             <span style={{ color: "#94A3B8", fontSize: "14px", fontWeight: 500 }}>{article.category}</span>
           </nav>
 
-          {/* Category Badge - ✅ Diubah menjadi warna dinamis */}
+          {/* Category Badge */}
           <span
             style={{
               display: "inline-block",
@@ -220,7 +193,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
           <h1
             style={{
               fontFamily: "var(--font-heading)",
-              fontSize: isMobile ? "1.75rem" : "clamp(2rem, 5vw, 3.2rem)",
+              fontSize: mobileView ? "1.75rem" : "clamp(2rem, 5vw, 3.2rem)",
               lineHeight: "1.15",
               fontWeight: 800,
               color: "var(--color-dark-slate)",
@@ -237,9 +210,9 @@ export default function NewsDetailClient({ article }: { article: Article | null 
             style={{
               display: "flex",
               alignItems: "center",
-              gap: isMobile ? "12px" : "20px",
+              gap: mobileView ? "12px" : "20px",
               color: "#64748B",
-              fontSize: isMobile ? "13px" : "15px",
+              fontSize: mobileView ? "13px" : "15px",
               fontWeight: 500,
               flexWrap: "wrap",
             }}
@@ -253,11 +226,11 @@ export default function NewsDetailClient({ article }: { article: Article | null 
                 <div style={{ fontSize: "13px" }}>{article.role}</div>
               </div>
             </div>
-            <span style={{ color: "#CBD5E1", display: isMobile ? "none" : "inline" }}>|</span>
+            <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
             <span>{article.date}</span>
-            <span style={{ color: "#CBD5E1", display: isMobile ? "none" : "inline" }}>|</span>
+            <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
             <span>⏱ {readTime} menit</span>
-            <span style={{ color: "#CBD5E1", display: isMobile ? "none" : "inline" }}>|</span>
+            <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
             <span>📝 {wordCount.toLocaleString("id-ID")} kata</span>
           </div>
         </div>
@@ -268,7 +241,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
         style={{
           maxWidth: 1000,
           margin: "0 auto 60px",
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: mobileView ? "0 16px" : "0 24px",
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? "translateY(0)" : "translateY(20px)",
           transition: "opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s",
@@ -281,7 +254,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
               alt={article.title}
               style={{
                 width: "100%",
-                height: isMobile ? "250px" : "450px",
+                height: mobileView ? "250px" : "450px",
                 objectFit: "cover",
                 display: "block",
               }}
@@ -291,7 +264,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
           <div
             style={{
               width: "100%",
-              height: isMobile ? "250px" : "400px",
+              height: mobileView ? "250px" : "400px",
               borderRadius: "24px",
               background: `linear-gradient(135deg, ${getGradientColor(article.category)} 0%, ${getGradientColor2(article.category)} 100%)`,
               display: "flex",
@@ -303,10 +276,10 @@ export default function NewsDetailClient({ article }: { article: Article | null 
               boxShadow: "0 20px 60px rgba(15, 23, 42, 0.12)",
             }}
           >
-            <span style={{ fontSize: isMobile ? "3rem" : "5rem", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.2))" }}>
+            <span style={{ fontSize: mobileView ? "3rem" : "5rem", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.2))" }}>
               {getCategoryEmoji(article.category)}
             </span>
-            <span style={{ fontWeight: 700, fontSize: isMobile ? "1rem" : "1.3rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            <span style={{ fontWeight: 700, fontSize: mobileView ? "1rem" : "1.3rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
               {article.category}
             </span>
           </div>
@@ -318,16 +291,16 @@ export default function NewsDetailClient({ article }: { article: Article | null 
         style={{
           maxWidth: 1000,
           margin: "0 auto 100px",
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: mobileView ? "0 16px" : "0 24px",
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 320px",
-          gap: isMobile ? "40px" : "60px",
+          gridTemplateColumns: mobileView ? "1fr" : "1fr 320px",
+          gap: mobileView ? "40px" : "60px",
         }}
       >
         {/* Article Body */}
         <article
           style={{
-            fontSize: isMobile ? "1rem" : "1.125rem",
+            fontSize: mobileView ? "1rem" : "1.125rem",
             lineHeight: "1.9",
             color: "#334155",
             fontFamily: "var(--font-body)",
@@ -338,7 +311,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
           {article.excerpt && (
             <p
               style={{
-                fontSize: isMobile ? "1.15rem" : "1.35rem",
+                fontSize: mobileView ? "1.15rem" : "1.35rem",
                 lineHeight: "1.7",
                 color: "#0F172A",
                 fontWeight: 600,
@@ -363,14 +336,14 @@ export default function NewsDetailClient({ article }: { article: Article | null 
             <PortableText value={article.content} />
           </div>
 
-          {/* Tags - ✅ Diubah menjadi warna dinamis berdasarkan string tag */}
+          {/* Tags */}
           <div style={{ marginTop: "48px", paddingTop: "32px", borderTop: "1px solid #E2E8F0" }}>
             <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "12px" }}>
               Topik
             </h4>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {["Berita", article.category, "UKM-F Riset", "UTM"].map((tag) => {
-                const tagAccent = getAccentColorByString(tag); // Ambil warna spesifik untuk tag ini
+                const tagAccent = getAccentColorByString(tag);
 
                 return (
                   <span
@@ -386,14 +359,6 @@ export default function NewsDetailClient({ article }: { article: Article | null 
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "none";
-                    }}
                   >
                     #{tag}
                   </span>
@@ -407,8 +372,8 @@ export default function NewsDetailClient({ article }: { article: Article | null 
         <aside>
           <div
             style={{
-              position: isMobile ? "relative" : "sticky",
-              top: isMobile ? "auto" : "40px",
+              position: mobileView ? "relative" : "sticky",
+              top: mobileView ? "auto" : "40px",
               padding: "28px",
               backgroundColor: "#FAFAFA",
               borderRadius: "24px",
@@ -473,9 +438,11 @@ export default function NewsDetailClient({ article }: { article: Article | null 
               Bagikan
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <ActionButton onClick={copyLink} icon="🔗" label="Salin Link" hoverAccent={categoryAccent} />
-              <ActionButton onClick={shareWhatsApp} icon="💬" label="WhatsApp" hoverAccent={categoryAccent} />
-              <ActionButton onClick={shareTwitter} icon="🐦" label="Twitter / X" hoverAccent={categoryAccent} />
+              <ActionButton onClick={copyLink} icon={copied ? <FaCheck style={{ color: "#16a34a" }} /> : <FaRegCopy />} label={copied ? "Tautan Disalin!" : "Salin Tautan"} brandColor="#475569" hoverAccent={categoryAccent} />
+              <ActionButton onClick={shareWhatsApp} icon={<FaWhatsapp style={{ color: "#25D366" }} />} label="WhatsApp" brandColor="#25D366" hoverAccent={categoryAccent} />
+              <ActionButton onClick={shareTwitter} icon={<FaXTwitter style={{ color: "#000000" }} />} label="Twitter / X" brandColor="#000000" hoverAccent={categoryAccent} />
+              <ActionButton onClick={shareFacebook} icon={<FaFacebookF style={{ color: "#1877F2" }} />} label="Facebook" brandColor="#1877F2" hoverAccent={categoryAccent} />
+              <ActionButton onClick={shareLinkedIn} icon={<FaLinkedinIn style={{ color: "#0A66C2" }} />} label="LinkedIn" brandColor="#0A66C2" hoverAccent={categoryAccent} />
             </div>
 
             <hr style={{ border: "0", borderTop: "1px solid #E2E8F0", margin: "20px 0" }} />
@@ -521,12 +488,12 @@ export default function NewsDetailClient({ article }: { article: Article | null 
         style={{
           maxWidth: 1000,
           margin: "0 auto 80px",
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: mobileView ? "0 16px" : "0 24px",
         }}
       >
         <div
           style={{
-            padding: isMobile ? "24px" : "32px",
+            padding: mobileView ? "24px" : "32px",
             background: `linear-gradient(135deg, ${categoryAccent.bg} 0%, #ffffff 100%)`,
             borderRadius: "24px",
             border: `1px solid ${categoryAccent.border}`,
@@ -541,7 +508,7 @@ export default function NewsDetailClient({ article }: { article: Article | null 
             <span style={{ fontSize: "12px", fontWeight: 700, color: categoryAccent.text, textTransform: "uppercase", letterSpacing: "1px" }}>
               Navigasi
             </span>
-            <h3 style={{ margin: "8px 0 0", fontSize: isMobile ? "16px" : "20px", fontWeight: 800, color: "#0F172A" }}>
+            <h3 style={{ margin: "8px 0 0", fontSize: mobileView ? "16px" : "20px", fontWeight: 800, color: "#0F172A" }}>
               Teruskan Membaca
             </h3>
           </div>
@@ -551,13 +518,13 @@ export default function NewsDetailClient({ article }: { article: Article | null 
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: isMobile ? "12px 20px" : "14px 28px",
+              padding: mobileView ? "12px 20px" : "14px 28px",
               background: categoryAccent.text,
               color: "#ffffff",
               borderRadius: "999px",
               textDecoration: "none",
               fontWeight: 700,
-              fontSize: isMobile ? "14px" : "15px",
+              fontSize: mobileView ? "14px" : "15px",
               transition: "all 0.3s ease",
               boxShadow: `0 8px 24px ${categoryAccent.bg}`,
             }}
@@ -566,35 +533,20 @@ export default function NewsDetailClient({ article }: { article: Article | null 
           </Link>
         </div>
       </footer>
-
-      {/* ─── CSS Animations ─── */}
-      <style jsx global>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </main>
   );
 }
-
-/* ─── Helper Components ─── */
 
 function ActionButton({
   onClick,
   icon,
   label,
-  hoverAccent,
+  brandColor,
 }: {
   onClick: () => void;
-  icon: string;
+  icon: React.ReactNode;
   label: string;
+  brandColor: string;
   hoverAccent: { bg: string; text: string; border: string };
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -605,29 +557,27 @@ function ActionButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        padding: "12px 16px",
+        padding: "10px 14px",
         borderRadius: "12px",
-        border: "1px solid #E2E8F0",
-        background: isHovered ? hoverAccent.bg : "#ffffff",
+        border: isHovered ? `1px solid ${brandColor}40` : "1px solid #E2E8F0",
+        background: isHovered ? `${brandColor}0D` : "#ffffff",
         cursor: "pointer",
         fontWeight: 600,
-        fontSize: "14px",
-        color: isHovered ? hoverAccent.text : "#334155",
+        fontSize: "13.5px",
+        color: isHovered ? brandColor : "#334155",
         display: "flex",
         alignItems: "center",
-        gap: "10px",
+        gap: "12px",
         transition: "all 0.2s ease",
         width: "100%",
         textAlign: "left",
       }}
     >
-      <span style={{ fontSize: "18px" }}>{icon}</span>
-      {label}
+      <span style={{ fontSize: "16px", display: "flex", alignItems: "center" }}>{icon}</span>
+      <span style={{ flex: 1 }}>{label}</span>
     </button>
   );
 }
-
-/* ─── Helpers ─── */
 
 function getCategoryEmoji(category: string): string {
   const map: Record<string, string> = {
@@ -659,7 +609,6 @@ function getGradientColor2(category: string): string {
   return map[category] || map.default;
 }
 
-// Menghitung kata dari blok teks Sanity
 function extractTextFromBlocks(blocks: any[]): string {
   if (!blocks || !Array.isArray(blocks)) return "";
   return blocks

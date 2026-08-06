@@ -3,7 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
-import { getAccentColorByString } from "@/lib/accent-cycle"; // Pastikan path ini benar
+import { getAccentColorByString } from "@/lib/accent-cycle"; 
+// ✅ Import ikon profesional dari react-icons
+import { FaWhatsapp, FaXTwitter, FaFacebookF, FaLinkedinIn, FaRegCopy, FaCheck } from "react-icons/fa6";
 
 // Tipe data dari Sanity
 export interface KaryaData {
@@ -15,48 +17,42 @@ export interface KaryaData {
   category: string;
   image: string;
   excerpt: string;
-  content: any[]; // Menggunakan array untuk Portable Text Sanity
+  content: any[]; 
   link: string;
 }
 
 export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }) {
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false); // 👈 Penangkal hydration error
+  const [copied, setCopied] = useState(false);
 
-  // Scroll progress + back to top visibility
   useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     const onScroll = () => {
       const scrollTop = window.scrollY;
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(total > 0 ? (scrollTop / total) * 100 : 0);
-      setShowBackToTop(scrollTop > 600);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
-  // Check mobile
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Fade in animation on mount
-  useEffect(() => {
     setIsVisible(true);
-  }, []);
 
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   const copyLink = useCallback(() => {
     navigator.clipboard.writeText(window.location.href);
-    alert("Link berhasil disalin!");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, []);
 
   const shareWhatsApp = useCallback(() => {
@@ -70,7 +66,17 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
   }, [karya]);
 
-  // Jika data karya tidak ditemukan di Sanity
+  const shareFacebook = useCallback(() => {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+  }, []);
+
+  const shareLinkedIn = useCallback(() => {
+    const title = encodeURIComponent(karya?.title || "");
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}`, "_blank");
+  }, [karya]);
+
   if (!karya) {
     return (
       <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#FAFAFA" }}>
@@ -86,13 +92,12 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
     );
   }
 
-  // Ekstrak teks untuk menghitung kata dan waktu baca
   const plainText = extractTextFromBlocks(karya.content);
   const wordCount = plainText.split(/\s+/).filter(Boolean).length;
   const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
-  // Menentukan warna aksen secara dinamis berdasarkan Kategori Karya
   const categoryAccent = getAccentColorByString(karya.category);
+  const mobileView = mounted ? isMobile : false;
 
   return (
     <main style={{ backgroundColor: "#ffffff", color: "#1e293b", minHeight: "100vh", position: "relative", overflowX: "hidden" }}>
@@ -111,41 +116,11 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
         }}
       />
 
-      {/* ─── Back to Top Button ─── */}
-      {showBackToTop && (
-        <button
-          onClick={scrollToTop}
-          aria-label="Kembali ke atas"
-          style={{
-            position: "fixed",
-            bottom: isMobile ? "16px" : "32px",
-            right: isMobile ? "16px" : "32px",
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            border: "none",
-            background: categoryAccent.text,
-            color: "#fff",
-            fontSize: "20px",
-            cursor: "pointer",
-            boxShadow: `0 8px 24px ${categoryAccent.bg}`,
-            zIndex: 99,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "all 0.3s ease",
-            animation: "fadeInUp 0.3s ease",
-          }}
-        >
-          ↑
-        </button>
-      )}
-
       {/* ─── Hero Section ─── */}
       <section
         style={{
           background: `linear-gradient(180deg, ${categoryAccent.bg} 0%, #ffffff 100%)`,
-          padding: isMobile ? "80px 16px 40px" : "120px 24px 60px",
+          padding: mobileView ? "80px 16px 40px" : "120px 24px 60px",
           position: "relative",
           overflow: "hidden",
         }}
@@ -155,8 +130,8 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
             position: "absolute",
             top: "-10%",
             right: "-5%",
-            width: isMobile ? "200px" : "400px",
-            height: isMobile ? "200px" : "400px",
+            width: mobileView ? "200px" : "400px",
+            height: mobileView ? "200px" : "400px",
             borderRadius: "50%",
             background: categoryAccent.bg,
             opacity: 0.6,
@@ -220,7 +195,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
           <h1
             style={{
               fontFamily: "var(--font-heading)",
-              fontSize: isMobile ? "1.75rem" : "clamp(2rem, 5vw, 3.2rem)",
+              fontSize: mobileView ? "1.75rem" : "clamp(2rem, 5vw, 3.2rem)",
               lineHeight: "1.15",
               fontWeight: 800,
               color: "var(--color-dark-slate)",
@@ -237,9 +212,9 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
             style={{
               display: "flex",
               alignItems: "center",
-              gap: isMobile ? "12px" : "20px",
+              gap: mobileView ? "12px" : "20px",
               color: "#64748B",
-              fontSize: isMobile ? "13px" : "15px",
+              fontSize: mobileView ? "13px" : "15px",
               fontWeight: 500,
               flexWrap: "wrap",
             }}
@@ -253,13 +228,13 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
                 <div style={{ fontSize: "13px" }}>{karya.role}</div>
               </div>
             </div>
-            <span style={{ color: "#CBD5E1", display: isMobile ? "none" : "inline" }}>|</span>
+            <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
             <span>{karya.date}</span>
-            <span style={{ color: "#CBD5E1", display: isMobile ? "none" : "inline" }}>|</span>
+            <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
             <span>⏱ {readTime} menit</span>
             {wordCount > 0 && (
               <>
-                <span style={{ color: "#CBD5E1", display: isMobile ? "none" : "inline" }}>|</span>
+                <span style={{ color: "#CBD5E1", display: mobileView ? "none" : "inline" }}>|</span>
                 <span>📝 {wordCount.toLocaleString("id-ID")} kata</span>
               </>
             )}
@@ -272,7 +247,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
         style={{
           maxWidth: 1000,
           margin: "0 auto 60px",
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: mobileView ? "0 16px" : "0 24px",
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? "translateY(0)" : "translateY(20px)",
           transition: "opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s",
@@ -285,7 +260,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
               alt={karya.title}
               style={{
                 width: "100%",
-                height: isMobile ? "250px" : "450px",
+                height: mobileView ? "250px" : "450px",
                 objectFit: "cover",
                 display: "block",
               }}
@@ -295,7 +270,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
           <div
             style={{
               width: "100%",
-              height: isMobile ? "250px" : "400px",
+              height: mobileView ? "250px" : "400px",
               borderRadius: "24px",
               background: `linear-gradient(135deg, ${categoryAccent.bg} 0%, ${categoryAccent.border} 100%)`,
               display: "flex",
@@ -307,10 +282,10 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
               boxShadow: "0 20px 60px rgba(15, 23, 42, 0.12)",
             }}
           >
-            <span style={{ fontSize: isMobile ? "3rem" : "5rem", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.1))" }}>
+            <span style={{ fontSize: mobileView ? "3rem" : "5rem", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.1))" }}>
               {getCategoryEmoji(karya.category)}
             </span>
-            <span style={{ fontWeight: 800, fontSize: isMobile ? "1rem" : "1.3rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            <span style={{ fontWeight: 800, fontSize: mobileView ? "1rem" : "1.3rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>
               {karya.category}
             </span>
           </div>
@@ -322,16 +297,16 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
         style={{
           maxWidth: 1000,
           margin: "0 auto 100px",
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: mobileView ? "0 16px" : "0 24px",
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 320px",
-          gap: isMobile ? "40px" : "60px",
+          gridTemplateColumns: mobileView ? "1fr" : "1fr 320px",
+          gap: mobileView ? "40px" : "60px",
         }}
       >
         {/* Article Body */}
         <article
           style={{
-            fontSize: isMobile ? "1rem" : "1.125rem",
+            fontSize: mobileView ? "1rem" : "1.125rem",
             lineHeight: "1.9",
             color: "#334155",
             fontFamily: "var(--font-body)",
@@ -342,7 +317,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
           {karya.excerpt && (
             <p
               style={{
-                fontSize: isMobile ? "1.15rem" : "1.35rem",
+                fontSize: mobileView ? "1.15rem" : "1.35rem",
                 lineHeight: "1.7",
                 color: "#0F172A",
                 fontWeight: 600,
@@ -378,7 +353,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
             </h4>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {[karya.category, "UKM-F Riset", "UTM", "Karya"].map((tag) => {
-                const tagAccent = getAccentColorByString(tag); // Warna tiap tag beda-beda
+                const tagAccent = getAccentColorByString(tag);
 
                 return (
                   <span
@@ -415,8 +390,8 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
         <aside>
           <div
             style={{
-              position: isMobile ? "relative" : "sticky",
-              top: isMobile ? "auto" : "40px",
+              position: mobileView ? "relative" : "sticky",
+              top: mobileView ? "auto" : "40px",
               padding: "28px",
               backgroundColor: "#FAFAFA",
               borderRadius: "24px",
@@ -469,7 +444,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
 
             <hr style={{ border: "0", borderTop: "1px solid #E2E8F0", margin: "20px 0" }} />
 
-            {/* Share Actions */}
+            {/* Share Actions - ✅ Diperbarui menggunakan react-icons */}
             <h4
               style={{
                 fontSize: "13px",
@@ -483,9 +458,11 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
               Bagikan
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <ActionButton onClick={copyLink} icon="🔗" label="Salin Link" hoverAccent={categoryAccent} />
-              <ActionButton onClick={shareWhatsApp} icon="💬" label="WhatsApp" hoverAccent={categoryAccent} />
-              <ActionButton onClick={shareTwitter} icon="🐦" label="Twitter / X" hoverAccent={categoryAccent} />
+              <ActionButton onClick={copyLink} icon={copied ? <FaCheck style={{ color: "#16a34a" }} /> : <FaRegCopy />} label={copied ? "Tautan Disalin!" : "Salin Tautan"} brandColor="#475569" />
+              <ActionButton onClick={shareWhatsApp} icon={<FaWhatsapp style={{ color: "#25D366" }} />} label="WhatsApp" brandColor="#25D366" />
+              <ActionButton onClick={shareTwitter} icon={<FaXTwitter style={{ color: "#000000" }} />} label="Twitter / X" brandColor="#000000" />
+              <ActionButton onClick={shareFacebook} icon={<FaFacebookF style={{ color: "#1877F2" }} />} label="Facebook" brandColor="#1877F2" />
+              <ActionButton onClick={shareLinkedIn} icon={<FaLinkedinIn style={{ color: "#0A66C2" }} />} label="LinkedIn" brandColor="#0A66C2" />
             </div>
 
             <hr style={{ border: "0", borderTop: "1px solid #E2E8F0", margin: "20px 0" }} />
@@ -531,12 +508,12 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
         style={{
           maxWidth: 1000,
           margin: "0 auto 80px",
-          padding: isMobile ? "0 16px" : "0 24px",
+          padding: mobileView ? "0 16px" : "0 24px",
         }}
       >
         <div
           style={{
-            padding: isMobile ? "24px" : "32px",
+            padding: mobileView ? "24px" : "32px",
             background: `linear-gradient(135deg, ${categoryAccent.bg} 0%, #ffffff 100%)`,
             borderRadius: "24px",
             border: `1px solid ${categoryAccent.border}`,
@@ -551,7 +528,7 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
             <span style={{ fontSize: "12px", fontWeight: 700, color: categoryAccent.text, textTransform: "uppercase", letterSpacing: "1px" }}>
               Navigasi
             </span>
-            <h3 style={{ margin: "8px 0 0", fontSize: isMobile ? "16px" : "20px", fontWeight: 800, color: "#0F172A" }}>
+            <h3 style={{ margin: "8px 0 0", fontSize: mobileView ? "16px" : "20px", fontWeight: 800, color: "#0F172A" }}>
               Teruskan Menjelajah
             </h3>
           </div>
@@ -561,13 +538,13 @@ export default function KaryaDetailClient({ karya }: { karya: KaryaData | null }
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: isMobile ? "12px 20px" : "14px 28px",
+              padding: mobileView ? "12px 20px" : "14px 28px",
               background: categoryAccent.text,
               color: "#ffffff",
               borderRadius: "999px",
               textDecoration: "none",
               fontWeight: 700,
-              fontSize: isMobile ? "14px" : "15px",
+              fontSize: mobileView ? "14px" : "15px",
               transition: "all 0.3s ease",
               boxShadow: `0 8px 24px ${categoryAccent.bg}`,
             }}
@@ -593,12 +570,12 @@ function ActionButton({
   onClick,
   icon,
   label,
-  hoverAccent,
+  brandColor,
 }: {
   onClick: () => void;
-  icon: string;
+  icon: React.ReactNode;
   label: string;
-  hoverAccent: { bg: string; text: string; border: string };
+  brandColor: string;
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -608,24 +585,24 @@ function ActionButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        padding: "12px 16px",
+        padding: "10px 14px",
         borderRadius: "12px",
-        border: "1px solid #E2E8F0",
-        background: isHovered ? hoverAccent.bg : "#ffffff",
+        border: isHovered ? `1px solid ${brandColor}40` : "1px solid #E2E8F0",
+        background: isHovered ? `${brandColor}0D` : "#ffffff",
         cursor: "pointer",
         fontWeight: 600,
-        fontSize: "14px",
-        color: isHovered ? hoverAccent.text : "#334155",
+        fontSize: "13.5px",
+        color: isHovered ? brandColor : "#334155",
         display: "flex",
         alignItems: "center",
-        gap: "10px",
+        gap: "12px",
         transition: "all 0.2s ease",
         width: "100%",
         textAlign: "left",
       }}
     >
-      <span style={{ fontSize: "18px" }}>{icon}</span>
-      {label}
+      <span style={{ fontSize: "16px", display: "flex", alignItems: "center" }}>{icon}</span>
+      <span style={{ flex: 1 }}>{label}</span>
     </button>
   );
 }
