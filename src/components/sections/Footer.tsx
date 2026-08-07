@@ -35,14 +35,27 @@ export default function Footer() {
   return (
     <footer style={{
       width: '100%',
-      backgroundColor: 'var(--color-dark-slate)',
+      position: 'relative',
+      backgroundImage: 'url("/universitas-trunojoyo-madura-1.jpg")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       color: 'var(--color-text-light)',
       padding: '80px 20px 40px 20px',
       borderTop: '1px solid var(--color-border-dark)'
     }}>
+      {/* Overlay Gelap Lebih Gelap */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        zIndex: 1
+      }} />
+
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
+        position: 'relative',
+        zIndex: 2,
         display: 'flex',
         flexDirection: 'column',
         gap: '60px'

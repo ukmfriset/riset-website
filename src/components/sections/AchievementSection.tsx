@@ -36,7 +36,7 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
   // ✅ Menggabungkan data Sanity (baru) dengan data statis (lama)
   const allAchievements = [...prestasiList, ...STATIC_ACHIEVEMENTS];
 
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(0);
   
   // ✅ Pagination sekarang menggunakan data gabungan (allAchievements)

@@ -46,12 +46,13 @@ export default function BackToTop() {
         width: "48px",
         height: "48px",
         borderRadius: "50%",
-        border: "none",
-        background: "var(--color-dark-slate)",
+        border: "2px solid #ffffff", // ✅ Tambah border putih agar semakin kontras
+        background: "var(--color-brand-orange)", // ✅ Diubah ke warna oranye brand agar mencolok di footer hitam
         color: "#ffffff",
         fontSize: "20px",
+        fontWeight: "bold",
         cursor: "pointer",
-        boxShadow: "0 8px 24px rgba(15, 23, 42, 0.25)",
+        boxShadow: "0 8px 24px rgba(255, 102, 0, 0.4)", // ✅ Shadow oranye terang
         zIndex: 999,
         display: "flex",
         alignItems: "center",
@@ -60,11 +61,13 @@ export default function BackToTop() {
         animation: "fadeInUp 0.3s ease",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--color-brand-orange)";
+        e.currentTarget.style.backgroundColor = "var(--color-dark-slate)"; // ✅ Hover jadi gelap
+        e.currentTarget.style.boxShadow = "0 8px 24px rgba(15, 23, 42, 0.4)";
         e.currentTarget.style.transform = "translateY(-4px)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--color-dark-slate)";
+        e.currentTarget.style.backgroundColor = "var(--color-brand-orange)";
+        e.currentTarget.style.boxShadow = "0 8px 24px rgba(255, 102, 0, 0.4)";
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >

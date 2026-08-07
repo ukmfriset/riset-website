@@ -1,44 +1,31 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useState, useEffect } from "react";
 
-function animateCount(el: HTMLElement, target: number, duration: number, suffix: string) {
-  let start: number | null = null;
-  const step = (ts: number) => {
-    if (!start) start = ts;
-    const progress = Math.min((ts - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(ease * target) + suffix;
-    if (progress < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
+const images = [
+  "/Hero-1.jpeg",
+  "/Hero-2.jpeg",
+  "/Hero-3.jpeg",
+  "/Hero-6.jpg",
+];
 
 export default function Hero() {
-  const membersRef = useRef<HTMLSpanElement>(null);
-  const projectsRef = useRef<HTMLSpanElement>(null);
-  const awardsRef = useRef<HTMLSpanElement>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (membersRef.current) animateCount(membersRef.current, 120, 1400, '+');
-      if (projectsRef.current) animateCount(projectsRef.current, 35, 1200, '+');
-      if (awardsRef.current) animateCount(awardsRef.current, 15, 1000, '+');
-    }, 500);
-    return () => clearTimeout(timer);
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 5000); // Ganti gambar setiap 3 detik
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <>
       <style>{`
         @keyframes fadeSlideUp {
-          0% { opacity: 0; transform: translateY(40px); }
+          0% { opacity: 0; transform: translateY(35px); }
           100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes blobZoomIn {
-          0% { opacity: 0; transform: scale(0.6) rotate(-15deg); }
-          100% { transform: scale(1) rotate(0); }
         }
 
         @keyframes pulseScroll {
@@ -48,7 +35,7 @@ export default function Hero() {
         }
 
         .animate-stagger {
-          animation: fadeSlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+          animation: fadeSlideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .hover-text-effect {
@@ -56,74 +43,54 @@ export default function Hero() {
           transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), text-shadow 0.3s ease;
         }
         .hover-text-effect:hover {
-          transform: scale(1.08) rotate(-2deg);
-          text-shadow: 0 8px 24px rgba(249, 115, 22, 0.4);
+          transform: scale(1.05) rotate(-1deg);
+          text-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
           cursor: default;
         }
       `}</style>
 
       <section
-        className="grad-hero"
         style={{
           width: '100%',
           maxWidth: '100vw',
-          padding: '40px 20px 120px',
+          padding: '140px 20px 140px',
           position: 'relative',
           overflow: 'hidden',
           fontFamily: 'var(--font-ui)',
         }}
       >
-        {/* FIX: Blob di-wrap dengan container yang overflow hidden */}
+        {/* Slideshow Background Images */}
+        {images.map((img, index) => (
+          <div
+            key={img}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url("${img}")`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              opacity: index === currentImageIndex ? 1 : 0,
+              transition: 'opacity 1s ease-in-out',
+              zIndex: 0,
+            }}
+          />
+        ))}
+
+        {/* Dark Overlay agar teks tetap kontras dan mudah dibaca di atas gambar */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          overflow: 'hidden',
+          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.8) 100%)',
           pointerEvents: 'none',
-          zIndex: 0,
-        }}>
-          <div style={{
-            position: 'absolute',
-            top: '40px',
-            left: '6%',
-            width: 'min(280px, 60vw)',
-            height: 'min(280px, 60vw)',
-            borderRadius: '50%',
-            background: 'var(--accent-purple-bg)',
-            opacity: 0.4,
-            filter: 'blur(90px)',
-            animation: 'blobZoomIn 2s cubic-bezier(0.16, 1, 0.3, 1) both',
-          }} />
-          <div style={{
-            position: 'absolute',
-            bottom: '60px',
-            right: '8%',
-            width: 'min(320px, 70vw)',
-            height: 'min(320px, 70vw)',
-            borderRadius: '50%',
-            background: 'var(--accent-yellow-bg)',
-            opacity: 0.35,
-            filter: 'blur(100px)',
-            animation: 'blobZoomIn 2.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both',
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: '30%',
-            right: '25%',
-            width: 'min(180px, 40vw)',
-            height: 'min(180px, 40vw)',
-            borderRadius: '50%',
-            background: 'var(--accent-blue-bg)',
-            opacity: 0.3,
-            filter: 'blur(70px)',
-            animation: 'blobZoomIn 2.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both',
-          }} />
-        </div>
+          zIndex: 1,
+        }} />
 
         <div style={{
-          maxWidth: '760px',
+          maxWidth: '820px',
           margin: '0 auto',
           position: 'relative',
-          zIndex: 1,
+          zIndex: 2,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -131,77 +98,100 @@ export default function Hero() {
           gap: '28px',
         }}>
 
+          {/* Badge Atas */}
           <div className="animate-stagger" style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'rgba(255,255,255,0.7)',
+            background: 'rgba(255, 255, 255, 0.15)',
             backdropFilter: 'blur(8px)',
-            color: 'var(--accent-purple-text)',
+            color: '#ffffff',
             padding: '6px 18px',
             borderRadius: '50px',
-            fontSize: '11.5px',
+            fontSize: '12px',
             fontWeight: 700,
-            width: 'fit-content',
-            border: '1px solid var(--accent-purple-border)',
-            animationDelay: '0.1s', 
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            animationDelay: '0.1s',
           }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-purple-text)' }} />
-            Budaya Belajar, Berpikir, dan Berkarya
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-brand-orange)' }} />
+            UKM-F RISET • FISIB UTM
           </div>
 
-          <div className="animate-stagger" style={{ display: 'flex', flexDirection: 'column', gap: '8px', animationDelay: '0.2s' }}>
+          {/* Heading */}
+          <div className="animate-stagger" style={{ display: 'flex', flexDirection: 'column', gap: '10px', animationDelay: '0.2s' }}>
             <span style={{
               fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(18px, 3vw, 24px)',
-              fontWeight: 700,
-              color: 'var(--color-dark-slate)',
+              fontSize: 'clamp(16px, 2.5vw, 20px)',
+              fontWeight: 600,
+              color: '#94A3B8',
+              letterSpacing: '0.02em',
             }}>
-              Semua Berawal dari Sebuah Ide.
             </span>
-            <h1 style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(32px, 5vw, 60px)',
-              fontWeight: 800,
-              lineHeight: 1.16,
-              color: 'var(--color-dark-slate)',
-              margin: 0,
-              wordWrap: 'break-word',
-            }}>
-              Tumbuhkan <span className="hover-text-effect" style={{ fontFamily: 'var(--font-display)',  color: 'var(--color-brand-orange)' }}>#SemangatBerkarya</span><br />
-              Berikan Dampak Nyata
+            <h1
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: 'clamp(34px, 5vw, 60px)',
+                fontWeight: 800,
+                lineHeight: 1.1,
+                color: '#ffffff',
+                margin: 0,
+                wordWrap: 'break-word',
+              }}
+            >
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '0.82em',
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                }}
+              >
+                Tumbuhkan
+              </span>
+
+              <span
+                className="hover-text-effect"
+                style={{
+                  display: 'block',
+                  color: 'var(--color-brand-orange)',
+                }}
+              >
+                #SemangatBerkarya
+              </span>
             </h1>
           </div>
 
+          {/* Deskripsi */}
           <p className="animate-stagger" style={{
             fontFamily: 'var(--font-body)',
-            fontSize: '15.5px',
-            lineHeight: '1.75',
-            color: 'var(--color-text-muted)',
-            maxWidth: '680px', 
+            fontSize: '16px',
+            lineHeight: '1.8',
+            color: '#CBD5E1',
+            maxWidth: '700px',
             margin: 0,
             wordWrap: 'break-word',
-            animationDelay: '0.35s'
+            animationDelay: '0.35s',
           }}>
-            UKM-F RISET adalah ruang bertumbuh bagi mahasiswa FISIB Universitas Trunojoyo Madura untuk mengembangkan cara berpikir kritis, kemampuan riset, kepenulisan, dan kolaborasi hingga melahirkan karya yang memberikan manfaat bagi masyarakat.
+            Wadah mahasiswa untuk belajar riset, menulis, dan berkarya bersama.
           </p>
 
+          {/* Indikator Scroll Bawah */}
           <div className="animate-stagger" style={{
-            marginTop: '32px',
+            marginTop: '40px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: '12px',
-            color: 'var(--color-text-muted)',
+            color: '#94A3B8',
             height: '80px',
-            animationDelay: '0.6s'
+            animationDelay: '0.6s',
           }}>
             <span style={{ 
-              fontSize: '12px', 
+              fontSize: '11px', 
               fontWeight: 600, 
-              letterSpacing: '1.5px', 
+              letterSpacing: '2px', 
               textTransform: 'uppercase',
-              opacity: 0.7 
+              opacity: 0.8 
             }}>
               Scroll Untuk Eksplorasi
             </span>
@@ -209,7 +199,7 @@ export default function Hero() {
               width: '2px',
               height: '40px',
               borderRadius: '2px',
-              background: 'linear-gradient(to bottom, var(--color-text-muted), transparent)',
+              background: 'linear-gradient(to bottom, #94A3B8, transparent)',
               transformOrigin: 'top',
               animation: 'pulseScroll 2s infinite ease-in-out'
             }} />

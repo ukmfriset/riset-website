@@ -31,7 +31,6 @@ export default function Navbar() {
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);
 
-  // Style untuk hamburger lines
   const lineStyle = {
     width: '24px',
     height: '2px',
@@ -42,18 +41,24 @@ export default function Navbar() {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <>
+      {/* Spacer agar konten di bawah navbar tidak tertutup saat fixed */}
+      <div style={{ height: '75px', width: '100%' }} />
+
       {/* NAVBAR */}
       <nav
         style={{
-          position: 'sticky',
+          position: 'fixed', // 👈 Diubah dari sticky ke fixed agar dijamin ikut saat di-scroll
           top: 0,
-          zIndex: 100,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
           width: '100%',
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           borderBottom: isScrolled ? '1px solid #F1F5F9' : '1px solid transparent',
           backdropFilter: 'blur(12px)',
           boxShadow: isScrolled ? '0 4px 20px -5px rgba(0,0,0,0.05)' : 'none',
+          transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
         }}
       >
         <div
@@ -183,7 +188,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

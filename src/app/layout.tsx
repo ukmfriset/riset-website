@@ -1,7 +1,7 @@
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/sections/Footer";
-import BackToTop from "@/components/ui/BackToTop"; // ✅ 1. Import komponen BackToTop
+import BackToTop from "@/components/ui/BackToTop";
 
 export const metadata = {
   title: "UKM-F RISET FISIB UTM - #SemangatBerkarya",
@@ -16,7 +16,6 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body 
-        style={{ margin: 0, padding: 0, overflowX: 'hidden', width: '100%' }} 
         suppressHydrationWarning={true}
       >
         {/* Navigasi Utama Atas */}
@@ -28,7 +27,7 @@ export default function RootLayout({
         {/* Footer 4 Kolom Hitam Premium */}
         <Footer />
 
-        {/* ✅ 2. Tombol Back to Top Global (Muncul di semua halaman otomatis) */}
+        {/* Tombol Back to Top Global */}
         <BackToTop />
       </body>
     </html>
