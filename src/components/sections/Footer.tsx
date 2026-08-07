@@ -36,7 +36,7 @@ export default function Footer() {
     <footer style={{
       width: '100%',
       position: 'relative',
-      backgroundImage: 'url("/universitas-trunojoyo-madura-1.jpg")',
+      backgroundImage: 'url("/Hero-6.jpg")',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       color: 'var(--color-text-light)',

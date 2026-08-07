@@ -1,5 +1,4 @@
 import Hero from '../components/sections/Hero';
-import QuoteSection from '../components/sections/QuoteSection';
 import AboutSection from '../components/sections/AboutSection';
 import KaryaSection from '../components/sections/KaryaSection';
 import NewsSection from '../components/sections/NewsSection';
@@ -7,7 +6,6 @@ import BenefitSection from '../components/sections/BenefitSection';
 import AchievementSection from '../components/sections/AchievementSection';
 import TeamSection from '../components/sections/TeamSection';
 import CtaSection from '../components/sections/CtaSection';
-import ColorStorySection from '../components/sections/ColorStorySection';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -71,7 +69,6 @@ export default async function Home() {
       <Analytics />
       <main>
         <Hero />
-        <QuoteSection />
         <AboutSection />
         
         {/* Masukkan data prestasi ke props */}
@@ -88,7 +85,6 @@ export default async function Home() {
         <TeamSection sanityTeam={teamData} />
         
         <CtaSection />
-        <ColorStorySection />
       </main>
     </>
   );

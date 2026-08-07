@@ -6,9 +6,12 @@ import Link from 'next/link';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false); // 👈 Tambahkan state mounted untuk cegah hydration mismatch
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true); // Menandakan komponen sudah aktif di client
+
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
       if (window.innerWidth > 768) {
@@ -40,6 +43,9 @@ export default function Navbar() {
     display: 'block',
   };
 
+  // Selama belum mounted di client, render tampilan netral/aman untuk SSR
+  const showMobile = isMounted ? isMobile : false;
+
   return (
     <>
       {/* Spacer agar konten di bawah navbar tidak tertutup saat fixed */}
@@ -48,7 +54,7 @@ export default function Navbar() {
       {/* NAVBAR */}
       <nav
         style={{
-          position: 'fixed', // 👈 Diubah dari sticky ke fixed agar dijamin ikut saat di-scroll
+          position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
@@ -82,18 +88,97 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          {!isMobile && (
+          {!showMobile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-              <Link href="/tentang" style={navLinkStyle}>Tentang Kami</Link>
-              <Link href="/karya" style={navLinkStyle}>Karya</Link>
-              <Link href="/berita" style={navLinkStyle}>Berita</Link>
-              <Link href="/media-partner" style={navLinkStyle}>Media Partner</Link>
-              <Link href="/kontak" style={navLinkStyle}>Hubungi Kami</Link>
+              <Link 
+                href="/tentang" 
+                style={navLinkStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#FF6600';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Tentang Kami
+              </Link>
+              <Link 
+                href="/karya" 
+                style={navLinkStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#FF6600';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Karya
+              </Link>
+              <Link 
+                href="/prestasi" 
+                style={navLinkStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#FF6600';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Prestasi
+              </Link>
+              <Link 
+                href="/berita" 
+                style={navLinkStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#FF6600';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Berita
+              </Link>
+              <Link 
+                href="/media-partner" 
+                style={navLinkStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#FF6600';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Media Partner
+              </Link>
+              <Link 
+                href="/kontak" 
+                style={navLinkStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#FF6600';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Hubungi Kami
+              </Link>
             </div>
           )}
 
           {/* Desktop CTA */}
-          {!isMobile && (
+          {!showMobile && (
             <a
               href="https://tongsis.ukmfriset.or.id"
               target="_blank"
@@ -113,7 +198,7 @@ export default function Navbar() {
           )}
 
           {/* Hamburger Button */}
-          {isMobile && (
+          {showMobile && (
             <button
               onClick={toggleMenu}
               style={{
@@ -144,7 +229,7 @@ export default function Navbar() {
       </nav>
 
       {/* MOBILE MENU - FULL SCREEN OVERLAY */}
-      {isMobile && menuOpen && (
+      {showMobile && menuOpen && (
         <div
           style={{
             position: 'fixed',
@@ -160,11 +245,60 @@ export default function Navbar() {
             gap: '4px',
           }}
         >
-          <Link href="/tentang" onClick={closeMenu} style={mobileLinkStyle}>Tentang Kami</Link>
-          <Link href="/karya" onClick={closeMenu} style={mobileLinkStyle}>Karya</Link>
-          <Link href="/berita" onClick={closeMenu} style={mobileLinkStyle}>Berita</Link>
-          <Link href="/media-partner" onClick={closeMenu} style={mobileLinkStyle}>Media Partner</Link>
-          <Link href="/kontak" onClick={closeMenu} style={mobileLinkStyle}>Hubungi Kami</Link>
+          <Link 
+            href="/tentang" 
+            onClick={closeMenu} 
+            style={mobileLinkStyle}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FF6600'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#0F172A'}
+          >
+            Tentang Kami
+          </Link>
+          <Link 
+            href="/karya" 
+            onClick={closeMenu} 
+            style={mobileLinkStyle}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FF6600'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#0F172A'}
+          >
+            Karya
+          </Link>
+          <Link 
+            href="/prestasi" 
+            onClick={closeMenu} 
+            style={mobileLinkStyle}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FF6600'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#0F172A'}
+          >
+            Prestasi
+          </Link>
+          <Link 
+            href="/berita" 
+            onClick={closeMenu} 
+            style={mobileLinkStyle}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FF6600'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#0F172A'}
+          >
+            Berita
+          </Link>
+          <Link 
+            href="/media-partner" 
+            onClick={closeMenu} 
+            style={mobileLinkStyle}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FF6600'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#0F172A'}
+          >
+            Media Partner
+          </Link>
+          <Link 
+            href="/kontak" 
+            onClick={closeMenu} 
+            style={mobileLinkStyle}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FF6600'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#0F172A'}
+          >
+            Hubungi Kami
+          </Link>
 
           <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #E2E8F0' }}>
             <a
@@ -181,7 +315,10 @@ export default function Navbar() {
                 fontWeight: '800',
                 textDecoration: 'none',
                 textAlign: 'center',
+                transition: 'background-color 0.25s ease',
               }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FF6600'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F172A'}
             >
               Gabung Sekarang
             </a>
@@ -199,7 +336,8 @@ const navLinkStyle = {
   fontWeight: '700',
   color: '#0F172A',
   textDecoration: 'none',
-  transition: 'color 0.25s ease',
+  transition: 'color 0.25s ease, transform 0.25s ease',
+  display: 'inline-block',
 };
 
 const mobileLinkStyle = {
@@ -211,6 +349,7 @@ const mobileLinkStyle = {
   padding: '16px 0',
   borderBottom: '1px solid #F1F5F9',
   display: 'block',
+  transition: 'color 0.25s ease',
 };
 
 const ctaStyle = {

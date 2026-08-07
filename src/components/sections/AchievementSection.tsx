@@ -33,15 +33,9 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // ✅ Menggabungkan data Sanity (baru) dengan data statis (lama)
+  // ✅ Menggabungkan data Sanity (baru) dengan data statis (lama), lalu ambil 8 teratas saja
   const allAchievements = [...prestasiList, ...STATIC_ACHIEVEMENTS];
-
-  const itemsPerPage = 8;
-  const [currentPage, setCurrentPage] = useState(0);
-  
-  // ✅ Pagination sekarang menggunakan data gabungan (allAchievements)
-  const totalPages = Math.ceil(allAchievements.length / itemsPerPage);
-  const currentItems = allAchievements.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+  const displayedAchievements = allAchievements.slice(0, 8);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -168,11 +162,10 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
           </div>
         </div>
 
-        {/* Grid Cards */}
+        {/* Grid Cards (Fixed 8 Kotak) */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-          {currentItems.map((item, index) => {
-            const globalIndex = index + (currentPage * itemsPerPage);
-            const accent = getAccentColor(globalIndex, 2);
+          {displayedAchievements.map((item, index) => {
+            const accent = getAccentColor(index, 2);
             const isHovered = hoverIndex === index;
 
             const cardDelay = `${0.4 + index * 0.08}s`;
@@ -277,35 +270,6 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
           })}
         </div>
 
-        {/* Navigasi halaman */}
-        {totalPages > 1 && (
-          <div 
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '10px',
-              ...getAnimatedStyle('0.8s')
-            }}
-          >
-            {Array.from({ length: totalPages }).map((_, pageIndex) => (
-              <button
-                key={pageIndex}
-                onClick={() => setCurrentPage(pageIndex)}
-                aria-label={`Halaman ${pageIndex + 1}`}
-                style={{
-                  width: currentPage === pageIndex ? '28px' : '10px',
-                  height: '10px',
-                  borderRadius: '50px',
-                  border: 'none',
-                  backgroundColor: currentPage === pageIndex ? 'var(--color-dark-slate)' : '#E2E8F0',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  padding: 0,
-                }}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );

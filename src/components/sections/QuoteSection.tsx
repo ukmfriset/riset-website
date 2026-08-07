@@ -45,7 +45,7 @@ export default function QuoteSection(): React.JSX.Element {
         width: '100%', 
         padding: '120px 20px', 
         overflow: 'hidden',
-        // BACKGROUND GRADASI DI SECTION LEVEL (full width)
+        // BACKGROUND GRADASI DI SECTION LEVEL (full width) — TETAP SAMA PERSIS
         backgroundColor: '#BAE6FD',
         backgroundImage: `
           radial-gradient(at 0% 0%, #BAE6FD 0px, transparent 70%),
@@ -60,7 +60,6 @@ export default function QuoteSection(): React.JSX.Element {
           maxWidth: '1200px',
           margin: '0 auto',
           borderRadius: '32px',
-          // HAPUS background dari sini, sudah di section
           padding: '72px 20px',
           display: 'flex',
           alignItems: 'center',
@@ -71,34 +70,36 @@ export default function QuoteSection(): React.JSX.Element {
         <div
           style={{
             backgroundColor: '#ffffff',
-            borderRadius: '24px',
+            borderRadius: '28px',
             maxWidth: '920px',
             width: '100%',
-            padding: '48px 24px',
+            padding: '52px 32px',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: '28px',
-            boxShadow: '0 30px 60px -20px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(255,255,255,0.6)',
+            boxShadow: '0 25px 50px -15px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(255,255,255,0.7)',
             position: 'relative',
           }}
         >
+          {/* Tanda Kutip Dekoratif */}
           <div style={{
             position: 'absolute',
-            top: '8px',
-            left: '20px',
+            top: '12px',
+            left: '24px',
             fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(60px, 10vw, 110px)',
+            fontSize: 'clamp(70px, 10vw, 110px)',
             lineHeight: 1,
             color: 'var(--color-brand-orange)',
-            opacity: 0.14,
+            opacity: 0.12,
             userSelect: 'none',
             pointerEvents: 'none',
           }}>
             "
           </div>
 
+          {/* Label Filosofi Kami */}
           <span style={{
             fontFamily: 'var(--font-body)',
             fontSize: '12px',
@@ -106,19 +107,25 @@ export default function QuoteSection(): React.JSX.Element {
             letterSpacing: '2.5px',
             textTransform: 'uppercase',
             color: 'var(--color-brand-orange)',
+            backgroundColor: 'var(--accent-orange-bg)',
+            padding: '6px 16px',
+            borderRadius: '50px',
+            border: '1px solid var(--accent-orange-border)',
             ...getAnimatedStyle('0.05s'),
           }}>
             Filosofi Kami
           </span>
 
+          {/* Teks Quote Utama (Sesuai Asal) */}
           <h2 style={{
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(17px, 2.4vw, 26px)',
             fontWeight: 500,
-            lineHeight: '1.65',
+            lineHeight: '1.7',
             color: 'var(--color-dark-slate)',
             margin: '0',
             fontStyle: 'italic',
+            maxWidth: '820px',
             wordWrap: 'break-word',
             overflowWrap: 'break-word',
             ...getAnimatedStyle('0.15s'),
@@ -134,6 +141,7 @@ export default function QuoteSection(): React.JSX.Element {
             </span> Hidup indah dengan berkarya.
           </h2>
 
+          {/* Garis Pemisah */}
           <div style={{
             width: '48px',
             height: '2px',
@@ -143,6 +151,7 @@ export default function QuoteSection(): React.JSX.Element {
             ...getAnimatedStyle('0.25s'),
           }} />
 
+          {/* Tombol Aksi */}
           <div style={getAnimatedStyle('0.35s')}>
             <Link
               href="/karya"
