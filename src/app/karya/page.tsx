@@ -18,14 +18,14 @@ async function getAllKarya() {
     excerpt,
     content
   }`;
-  
+
   const rawData = await client.fetch(query, {}, { next: { revalidate: 60 } });
-  
+
   // Format data sebelum dikirim ke Client
   return rawData.map((item: any) => {
     // Ubah "_type" (misal: "puisi") menjadi format Kategori (misal: "Puisi")
     const categoryName = item._type.charAt(0).toUpperCase() + item._type.slice(1);
-    
+
     return {
       slug: item.slug || "no-slug",
       title: item.title || "Tanpa Judul",
@@ -34,8 +34,8 @@ async function getAllKarya() {
       category: categoryName,
       excerpt: item.excerpt || "",
       content: item.content || [],
-      // URL dibuat dinamis berdasarkan jenis karyanya
-      link: `/${item._type}/${item.slug}` 
+      // ✅ URL sekarang pakai prefix /karya/
+      link: `/karya/${item._type}/${item.slug}` 
     };
   });
 }

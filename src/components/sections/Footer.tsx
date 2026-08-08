@@ -217,7 +217,12 @@ export default function Footer() {
               IKUTI KAMI
             </h4>
 
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {/* ✅ GRID 2 BARIS x 3 KOLOM */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 40px)',
+              gap: '10px'
+            }}>
               {socialMedias.map((media, idx) => (
                 <a
                   key={idx}
