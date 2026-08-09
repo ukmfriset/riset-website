@@ -84,8 +84,8 @@ export default function BenefitSection() {
                 ...getAnimatedStyle('0.15s')
               }}
             >
-              Kenapa Harus<br />
-              <span style={{ color: 'var(--color-brand-orange)' }}>#SemangatBerkarya</span>?
+              Lebih dari Sekadar<br />
+              <span style={{ color: 'var(--color-brand-orange)' }}>Nambah CV</span>
             </h2>
             <div 
               style={{ 

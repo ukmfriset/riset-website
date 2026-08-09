@@ -114,7 +114,7 @@ export default function Hero() {
             animationDelay: '0.1s',
           }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-brand-orange)' }} />
-            UKM-F RISET • FISIB UTM
+            Budaya Belajar, Berpikir, dan Berkarya
           </div>
 
           {/* Heading */}
@@ -157,6 +157,16 @@ export default function Hero() {
                 }}
               >
                 #SemangatBerkarya
+              </span>
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '0.82em',
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                }}
+              >
+                Berikan Dampak Nyata
               </span>
             </h1>
           </div>

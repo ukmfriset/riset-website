@@ -113,8 +113,8 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
                 ...getAnimatedStyle('0.15s')
               }}
             >
-              Prestasi adalah cerita, <br />
-              <span style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-orange)' }}>#SemangatBerkarya</span> adalah perjalanan
+              Setiap Prestasi Punya <br />
+              <span style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-orange)' }}>Cerita di Baliknya</span>
             </h2>
             <div 
               style={{ 

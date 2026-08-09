@@ -72,7 +72,7 @@ export default function AboutSection() {
               ...getAnimatedStyle('0s') // Muncul instan saat terpicu
             }}
           >
-            Tentang Kami →
+            #SemangatBerkarya →
           </span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px', alignItems: 'flex-start' }}>
             
@@ -87,8 +87,8 @@ export default function AboutSection() {
                 ...getAnimatedStyle('0.15s') // Delay tipis setelah badge
               }}
             >
-              Mengapa Harus <br/>
-              <span style={{ color: 'var(--color-brand-orange)' }}>#SemangatBerkarya</span>?
+              Berkarya Itu Bukan Soal <br/>
+              <span style={{ color: 'var(--color-brand-orange)' }}>Siapa yang Paling Jago</span>
             </h2>
             
             <div 
@@ -98,7 +98,7 @@ export default function AboutSection() {
               }}
             >
               <p style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--color-text-muted)', margin: '0 0 16px 0' }}>
-                Berkarya itu bukan soal siapa yang paling jago. Ini soal siapa yang mau terus belajar.
+                Ini soal siapa yang mau terus belajar.
               </p>
               <p style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--color-text-muted)', margin: '0 0 16px 0' }}>
                 Di UKM-F RISET, kami percaya setiap mahasiswa punya potensi untuk berkembang — asal dikasih ruang untuk berdiskusi, coba-coba, riset, menulis, dan berkolaborasi.

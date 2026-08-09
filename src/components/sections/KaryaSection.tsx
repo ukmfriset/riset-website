@@ -111,7 +111,8 @@ export default function KaryaSection() {
                 ...getAnimatedStyle('0.15s')
               }}
             >
-              Bukti Nyata dari <span style={{ color: 'var(--color-brand-orange)' }}>#SemangatBerkarya</span>
+              Dari Rasa Penasaran <br />
+              <span style={{ color: 'var(--color-brand-orange)' }}>Jadi Karya</span>
             </h2>
             
             <div 

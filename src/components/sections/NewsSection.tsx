@@ -103,8 +103,8 @@ export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
                 ...getAnimatedStyle('0.15s')
               }}
             >
-              Cerita di Balik <br />
-              <span style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-orange)' }}>#SemangatBerkarya</span>
+              Catatan <br />
+              <span style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-orange)' }}>Perjalanan Kami</span>
             </h2>
             <div
               style={{

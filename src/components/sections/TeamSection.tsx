@@ -188,7 +188,7 @@ export default function TeamSection({ sanityTeam = [] }: { sanityTeam?: any[] })
               }}
             >
               Tak Kenal Maka <br />
-              <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', color: 'var(--color-brand-orange)' }}>Tak Kenalin.</span>
+              <span style={{ fontFamily: 'var(--font-display)', color: 'var(--color-brand-orange)' }}>Tak Kenalin</span>
             </h2>
 
             <div 
