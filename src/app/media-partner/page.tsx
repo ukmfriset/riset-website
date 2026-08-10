@@ -29,16 +29,16 @@ export default function MediaPartnerPage() {
       
       {/* HEADER MEDIA PARTNER */}
       <section style={{ 
-        background: 'linear-gradient(to bottom, var(--accent-orange-bg) 0%, #FAFAFA 100%)', 
+        background: 'linear-gradient(to bottom, var(--accent-gray-bg) 0%, #FAFAFA 100%)', 
         padding: '160px 20px 80px', 
         textAlign: 'center' 
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
-          <span style={{ display: 'inline-block', background: '#ffffff', color: 'var(--accent-orange-text)', padding: '6px 16px', borderRadius: '50px', fontFamily: 'var(--font-heading)', fontSize: '12px', fontWeight: '800', letterSpacing: '2px', border: '1px solid var(--accent-orange-border)' }}>
+          <span style={{ display: 'inline-block', background: '#ffffff', color: 'var(--accent-gray-text)', padding: '6px 16px', borderRadius: '50px', fontFamily: 'var(--font-heading)', fontSize: '12px', fontWeight: '800', letterSpacing: '2px', border: '1px solid var(--accent-gray-border)' }}>
             MEDIA PARTNER
           </span>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: '800', color: 'var(--color-dark-slate)', margin: 0, lineHeight: 1.1 }}>
-            Mari <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', color: 'var(--accent-orange-text)' }}>Bekerjasama.</span>
+            Mari <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', color: 'var(--accent-gray-text)' }}>Bekerjasama.</span>
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--color-text-muted)', margin: 0, maxWidth: '600px' }}>
             Kirim dan promosikan kegiatan/acara kamu di UKMF Riset secara mudah, gampang dan tidak dipungut biaya apapun (GRATIS).
@@ -55,7 +55,7 @@ export default function MediaPartnerPage() {
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {benefits.map((b, i) => (
                 <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '15px', color: 'var(--color-text-muted)' }}>
-                  <FaCheckCircle color="var(--accent-blue-text)" /> {b}
+                  <FaCheckCircle color="var(--accent-gray-border)" /> {b}
                 </li>
               ))}
             </ul>
@@ -66,7 +66,7 @@ export default function MediaPartnerPage() {
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {requirements.map((r, i) => (
                 <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '15px', color: 'var(--color-text-muted)' }}>
-                  <span style={{ marginTop: '4px' }}><FaCheckCircle color="var(--accent-green-text)" /></span> {r}
+                  <span style={{ marginTop: '4px' }}><FaCheckCircle color="var(--accent-gray-border)" /></span> {r}
                 </li>
               ))}
             </ul>
@@ -99,7 +99,7 @@ export default function MediaPartnerPage() {
             <FaInstagram /> Follow @ukmfriset
           </a>
           <a href="https://drive.google.com/file/d/1tjKslMwcP-xFsuluTmEimuMsMUUXmoHt/view" target="_blank" rel="noreferrer"
-             style={{ textDecoration: 'none', backgroundColor: 'var(--accent-blue-text)', color: '#fff', padding: '14px 28px', borderRadius: '50px', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+             style={{ textDecoration: 'none', backgroundColor: 'var(--accent-gray-text)', color: '#fff', padding: '14px 28px', borderRadius: '50px', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FaDownload /> Unduh Logo
           </a>
           <Link href="/kontak" 

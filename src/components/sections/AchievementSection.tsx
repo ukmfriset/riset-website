@@ -189,6 +189,9 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
                   transition: isHovered 
                     ? 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease' 
                     : animatedStyle.transition,
+                  display: 'flex',          // 👈 Ditambahkan agar kartu menjadi flex container
+                  flexDirection: 'column',  // 👈 Menyusun elemen secara vertikal
+                  height: '100%',           // 👈 Memastikan kartu mengisi tinggi grid secara penuh
                 }}
               >
                 <div style={{
@@ -197,6 +200,7 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
                   borderRadius: '24px',
                   position: 'relative',
                   overflow: 'hidden',
+                  flexShrink: 0,           // 👈 Mencegah gambar ikut menyusut
                 }}>
                   <span style={{
                     position: 'absolute',
@@ -227,7 +231,13 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
                   </div>
                 </div>
 
-                <div style={{ padding: '24px 16px 16px' }}>
+                {/* Container Konten Bawah */}
+                <div style={{ 
+                  padding: '24px 16px 16px', 
+                  display: 'flex',              // 👈 Flex container untuk isi teks
+                  flexDirection: 'column',      // 👈 Susunan vertikal
+                  flex: 1,                      // 👈 Mengisi sisa ruang kosong di bawah gambar
+                }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
                     <h3 style={{ 
                       fontFamily: 'var(--font-heading)', 
@@ -260,7 +270,15 @@ export default function AchievementSection({ prestasiList = [] }: { prestasiList
                     </span>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {/* Bagian Nama Bawah (Otomatis terdorong ke paling bawah agar sejajar) */}
+                  <div style={{ 
+                    borderTop: '1px solid #F1F5F9', 
+                    paddingTop: '16px', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '4px',
+                    marginTop: 'auto'           // 👈 Kunci utama agar posisi nama di bawah selalu sejajar rata
+                  }}>
                     <span style={{ fontFamily: 'var(--font-heading)', fontSize: '14px', fontWeight: 800, color: accent.text }}>{item.name}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '12.5px', fontWeight: 500, color: 'var(--color-text-muted)' }}>{item.info}</span>
                   </div>

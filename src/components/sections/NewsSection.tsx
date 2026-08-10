@@ -12,13 +12,29 @@ export interface NewsItem {
   id?: string;
   slug?: string;
   title: string;
-  date: string; // Format dari Sanity sekarang berupa string tanggal standar (YYYY-MM-DD)
+  date: string; // Format dari Sanity berupa string tanggal standar (YYYY-MM-DD)
   author: string;
   role: string;
   category: string;
   image?: string;
-  excerpt: string;
+  excerpt?: string;
+  content?: any; // Tambahan untuk cadangan teks jika excerpt kosong
   link: string;
+}
+
+// ✅ Helper ekstraksi otomatis teks dari struktur content Sanity jika excerpt kosong
+function extractTextFromContent(content: any): string {
+  if (!content) return "";
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((block) => {
+        if (block._type !== "block" || !block.children) return "";
+        return block.children.map((child: any) => child.text).join("");
+      })
+      .join(" ");
+  }
+  return "";
 }
 
 export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
@@ -160,6 +176,11 @@ export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
             const cardDelay = `${0.4 + index * 0.1}s`;
             const animatedStyle = getAnimatedStyle(cardDelay);
 
+            // Ambil excerpt dari news.excerpt, jika kosong otomatis ekstrak dari content
+            const displayExcerpt = news.excerpt && news.excerpt.trim() !== "" 
+              ? news.excerpt 
+              : extractTextFromContent(news.content);
+
             return (
               <Link
                 href={news.link}
@@ -182,6 +203,7 @@ export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
                   transition: isHovered
                     ? 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
                     : animatedStyle.transition,
+                  height: '100%',
                 }}
               >
                 <div style={{
@@ -193,6 +215,7 @@ export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '40px',
+                  flexShrink: 0,
                   background: news.image
                     ? '#F1F5F9'
                     : `linear-gradient(to bottom, color-mix(in srgb, ${accent.bg} 55%, white) 0%, #ffffff 100%)`,
@@ -263,9 +286,11 @@ export default function NewsSection({ newsList }: { newsList: NewsItem[] }) {
                     </span>
                   </div>
 
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '13.5px', fontWeight: 500, lineHeight: '1.7', color: 'var(--color-text-muted)', margin: '0 0 16px', display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                    {news.excerpt}
-                  </p>
+                  {displayExcerpt && (
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '13.5px', fontWeight: 500, lineHeight: '1.7', color: 'var(--color-text-muted)', margin: '0 0 16px', display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      {displayExcerpt}
+                    </p>
+                  )}
 
                   <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '12.5px', fontWeight: 700, color: 'var(--color-dark-slate)' }}>

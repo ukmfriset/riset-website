@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { getAccentColor, getAccentColorByString } from "@/lib/accent-cycle"; 
 
-// ✅ Definisikan tipe datanya di sini agar mandiri dan tidak bergantung pada file statis lama
 export interface CardItem {
   id?: string;
   slug?: string;
@@ -13,7 +12,8 @@ export interface CardItem {
   author: string;
   category: string;
   image?: string;
-  excerpt: string;
+  excerpt?: string;
+  content?: any; // Digunakan sebagai sumber cadangan untuk excerpt otomatis
   link: string;
 }
 
@@ -24,24 +24,40 @@ interface NewsCardProps {
   index: number;
 }
 
-// ✅ Helper untuk icon emoji berdasarkan kategori
 function getCategoryEmoji(category: string): string {
   const lowerCat = (category || "").toLowerCase();
   if (lowerCat.includes("essay")) return "📝";
   if (lowerCat.includes("puisi")) return "✍️";
   if (lowerCat.includes("artikel")) return "📰";
   if (lowerCat.includes("cerpen")) return "📖";
-  return "📰"; // Default Berita
+  return "📰";
+}
+
+// ✅ Fungsi ekstraksi otomatis teks dari struktur content Sanity jika excerpt kosong
+function extractTextFromContent(content: any): string {
+  if (!content) return "";
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((block) => {
+        if (block._type !== "block" || !block.children) return "";
+        return block.children.map((child: any) => child.text).join("");
+      })
+      .join(" ");
+  }
+  return "";
 }
 
 export default function NewsCard({ item, delay, isVisible, index }: NewsCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   
-  // Warna untuk background kartu (berubah-ubah berdasarkan urutan list)
   const cardAccent = getAccentColor(index, 1);
-  
-  // Warna khusus untuk tag kategori (konsisten berdasarkan nama kategori)
   const categoryAccent = getAccentColorByString(item.category);
+
+  // Ambil excerpt dari item.excerpt, jika kosong otomatis ekstrak dari content
+  const displayExcerpt = item.excerpt && item.excerpt.trim() !== "" 
+    ? item.excerpt 
+    : extractTextFromContent(item.content);
 
   const animatedStyle = {
     opacity: isVisible ? 1 : 0,
@@ -87,7 +103,6 @@ export default function NewsCard({ item, delay, isVisible, index }: NewsCardProp
             <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to top, ${cardAccent.bg} 60%, transparent 100%)`, mixBlendMode: 'multiply', pointerEvents: 'none', transition: 'opacity 0.3s ease', opacity: isHovered ? 0.8 : 1 }} />
           </>
         ) : (
-          // ✅ Emoji menyesuaikan dengan tipe Karyanya
           <span style={{ fontSize: '48px', opacity: 0.5, filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.1))" }}>
             {getCategoryEmoji(item.category)}
           </span>
@@ -105,14 +120,37 @@ export default function NewsCard({ item, delay, isVisible, index }: NewsCardProp
 
       <div style={{ padding: '24px 16px 16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '12px' }}>
-          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: 800, color: 'var(--color-dark-slate)', margin: 0, lineHeight: '1.4' }}>{item.title}</h3>
+          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: 800, color: 'var(--color-dark-slate)', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {item.title}
+          </h3>
           <span style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: isHovered ? cardAccent.bg : '#F1F5F9', color: isHovered ? '#ffffff' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 700, flexShrink: 0, transform: isHovered ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'background-color 0.3s ease, color 0.3s ease, transform 0.3s ease' }}>
             ↗
           </span>
         </div>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13.5px', color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: '16px', fontWeight: 500 }}>{item.excerpt}</p>
+        
+        {/* Cuplikan kalimat pertama / excerpt berita (Otomatis muncul dari content jika excerpt kosong) */}
+        {displayExcerpt && (
+          <p style={{ 
+            fontFamily: 'var(--font-body)', 
+            fontSize: '13.5px', 
+            color: 'var(--color-text-muted)', 
+            lineHeight: 1.6, 
+            marginBottom: '16px', 
+            fontWeight: 500,
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}>
+            {displayExcerpt}
+          </p>
+        )}
+
+        {/* Bagian Penulis yang diratakan sejajar di bawah dengan marginTop: auto */}
         <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid #F1F5F9' }}>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '12.5px', fontWeight: 700, color: 'var(--color-dark-slate)' }}>{item.author}</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: '12.5px', fontWeight: 700, color: 'var(--color-dark-slate)' }}>
+            {item.author || "Anonim"}
+          </span>
         </div>
       </div>
     </Link>

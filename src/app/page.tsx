@@ -12,7 +12,7 @@ import { Analytics } from "@vercel/analytics/next"
 // 1. Import Sanity client
 import { client } from '@/sanity/client'; 
 
-// 2. Fungsi untuk menarik 4 berita terbaru dari Sanity
+// 2. Fungsi untuk menarik 4 berita terbaru dari Sanity (content ditambahkan agar excerpt otomatis bisa diekstrak jika kosong)
 async function getLatestNews() {
   const query = `*[_type == "news"] | order(date desc)[0...4] {
     "id": slug.current,
@@ -24,6 +24,7 @@ async function getLatestNews() {
     category,
     "image": image.asset->url,
     excerpt,
+    content,
     "link": "/berita/" + slug.current
   }`;
   

@@ -135,6 +135,9 @@ export default function PrestasiClient({ initialPrestasi }: { initialPrestasi: P
                     ? '0 16px 32px rgba(15, 23, 42, 0.08)'
                     : '0 4px 6px -1px rgba(0,0,0,0.05)',
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+                  display: 'flex',          // 👈 Kartu diatur flex vertikal
+                  flexDirection: 'column',  // 👈 Menyusun elemen ke bawah
+                  height: '100%',           // 👈 Memenuhi tinggi grid sepenuhnya
                 }}
               >
                 {/* Panel gradasi */}
@@ -144,6 +147,7 @@ export default function PrestasiClient({ initialPrestasi }: { initialPrestasi: P
                   borderRadius: '24px',
                   position: 'relative',
                   overflow: 'hidden',
+                  flexShrink: 0,
                 }}>
                   <span style={{
                     position: 'absolute',
@@ -175,14 +179,28 @@ export default function PrestasiClient({ initialPrestasi }: { initialPrestasi: P
                   </div>
                 </div>
 
-                <div style={{ padding: '24px 16px 16px' }}>
+                {/* Konten bawah */}
+                <div style={{ 
+                  padding: '24px 16px 16px', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  flex: 1,                    // 👈 Mengisi sisa ruang secara fleksibel
+                }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
                     <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '17px', fontWeight: 800, color: 'var(--color-dark-slate)', margin: 0, lineHeight: '1.4' }}>
                       {item.title}
                     </h3>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {/* Bagian nama bawah yang diratakan sejajar dengan margin-top: auto */}
+                  <div style={{ 
+                    borderTop: '1px solid #F1F5F9', 
+                    paddingTop: '16px', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '4px',
+                    marginTop: 'auto'          // 👈 Kunci utama agar posisi nama selalu sejajar di dasar kartu
+                  }}>
                     <span style={{ fontFamily: 'var(--font-heading)', fontSize: '14px', fontWeight: 800, color: accent.text }}>{item.name}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '12.5px', fontWeight: 500, color: 'var(--color-text-muted)' }}>{item.info}</span>
                   </div>
