@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "npm" # Ganti "npm" dengan "yarn" atau "pnpm" jika kamu menggunakannya
+    directory: "/"
+    schedule:
+      interval: "weekly"
