@@ -1,6 +1,11 @@
 version: 2
 updates:
-  - package-ecosystem: "npm" # Ganti "npm" dengan "yarn" atau "pnpm" jika kamu menggunakannya
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      # Nama grup bebas, ini akan menggabungkan semua update npm ke dalam 1 PR
+      semua-update-npm:
+        patterns:
+          - "*"
